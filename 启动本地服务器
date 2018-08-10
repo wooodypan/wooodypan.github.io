@@ -1,0 +1,72 @@
+#!/bin/bash
+echo " "
+echo " "
+echo " "
+echo " "
+echo " "
+echo " "
+echo " "
+echo " "
+echo $path
+
+cd "$(dirname "$0")"
+echo "----------------------------------------"
+
+# # dirname $0，取得当前执行的脚本文件的父目录
+# # cd `dirname $0`，进入这个目录(切换当前工作目录)
+# # pwd，显示当前工作目录(cd执行后的)
+# # basepath=$(cd `dirname $0`; pwd;ls;)
+# # echo $basepath
+# echo "本地服务器已开启，现在请打开浏览器"
+# # /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"
+# # /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print "本机地址ip";print $2}'|tr -d "addr:"
+# ifconfig | grep inet | grep -v inet6 | grep --color -A 1 127.0.0.1 |awk '{split($0,b," ");  if (b[2] ~ /127.0.0.1/){} else {print b[2];}}'
+# # echo "访问: http://127.0.0.1:20000/"
+# echo "温馨提示：请不要关闭本窗口，否则无法访问html文件，使用本机ip地址加端口号进行访问"
+# echo "------------------END----------------------"
+# python -m SimpleHTTPServer 2333
+# echo " "
+# echo " "
+
+
+#-------------------参数配置---------------------
+# 本机局域网IP（不用写）
+MY_LOCAL_IP=''
+PORT='23333'
+echo "请输入你要使用服务的端口号：1-99999"
+#端口号
+read PORT
+if [ "$PORT" -gt 0 ] 2>/dev/null ; then
+	#statements
+	echo "输入的端口 ：$PORT"
+else
+	echo "您输入端口有误，已使用默认端口：$port开启"
+fi
+echo "port == $PORT"
+#端口号
+# PORT='23333'
+#-------------------获取局域网IP---------------------
+#ifconfig命令，会有很多的信息输出
+#grep inet 只留下包含inet的行
+#grep -v inet6 去掉有inet6 的行，此时，第二行的ip是你的目标
+#grep --color -A 1 127.0.0.1  # -A 1取包含127.0.0.1的行及他后面的一行 --color在控制台有颜色
+#awk '{split($0,b," ");  用空格分割行，b[1]是字符inet b[2]是ip
+#if (b[2] ~ /127.0.0.1/){} else {print b[2];}  IP是127.0.0.1的不打印
+MY_LOCAL_IP=`ifconfig | grep inet | grep -v inet6 | grep --color -A 1 127.0.0.1 |awk '{split($0,b," ");  if (b[2] ~ /127.0.0.1/){} else {print b[2];}}'`
+# print ":2333/webapp/index.html";
+# echo $MY_LOCAL_IP
+MY_LOCAL_IP='http://'$MY_LOCAL_IP':'$PORT'/webapp/index.html'
+
+echo "本地服务器已开启，现在请打开浏览器访问以下地址"
+echo "------------------↓↓↓----------------------"
+echo " "
+echo $MY_LOCAL_IP
+echo " "
+echo "------------------↑↑↑----------------------"
+# /sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print "本机地址ip";print $2}'|tr -d "addr:"
+echo "PS:温馨提示：请不要关闭本窗口，否则无法访问html文件"
+
+python -m SimpleHTTPServer $PORT
+echo " "
+echo " "
+
